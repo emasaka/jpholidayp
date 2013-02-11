@@ -10,6 +10,7 @@ import cPickle as pickle
 datadir = "~/.jpholidayp"
 cachefile = "cache"
 cachedays = 2
+fetchdays = 2
 
 class Cache:
     def __init__(self):
@@ -43,21 +44,21 @@ class GoogleJpHoliday:
     DATEFMT = "%Y-%m-%d"
 
     @classmethod
-    def get(self, min, max):
+    def get(self, dt, delta):
         cache = Cache()
         dat = cache.get()
-        if dat:
-            return dat
+        if dat and dat["date"] <= dt and dt < (dt + dat["delta"]):
+            return dat["data"]
         else:
-            dat_new = self.get_remote(min, max)
-            cache.set(dat_new)
+            dat_new = self.get_remote(dt, delta)
+            cache.set({"date": dt, "delta": delta, "data": dat_new})
             return dat_new
 
     @classmethod
-    def get_remote(self, min, max):
-        minstr = date.strftime(min, self.DATEFMT)
-        maxstr = date.strftime(max, self.DATEFMT)
-        url = self.URLBASE + "?alt=json&start-min=%s&start-max=%s" % (minstr, maxstr)
+    def get_remote(self, dt, delta):
+        min = date.strftime(dt, self.DATEFMT)
+        max = date.strftime(dt + delta, self.DATEFMT)
+        url = self.URLBASE + "?alt=json&start-min=%s&start-max=%s" % (min, max)
         res = urllib2.urlopen(url)
         dat = json.load(res)
         return [datetime.strptime(x["gd$when"][0]["startTime"], self.DATEFMT).date() for x in dat["feed"]["entry"]]
@@ -65,7 +66,7 @@ class GoogleJpHoliday:
 class JpHoliday:
     @classmethod
     def is_national_holiday(self, dt):
-        holidays = GoogleJpHoliday.get(dt, dt + timedelta(cachedays))
+        holidays = GoogleJpHoliday.get(dt, timedelta(fetchdays))
         return dt in holidays
 
     # value of datetime.weekday()
