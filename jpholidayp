@@ -61,7 +61,10 @@ class GoogleJpHoliday:
         url = self.URLBASE + "?alt=json&start-min=%s&start-max=%s" % (min, max)
         res = urllib2.urlopen(url)
         dat = json.load(res)
-        return [datetime.strptime(x["gd$when"][0]["startTime"], self.DATEFMT).date() for x in dat["feed"]["entry"]]
+        feed = dat["feed"]
+        if not feed.has_key("entry"):
+            return []
+        return [datetime.strptime(x["gd$when"][0]["startTime"], self.DATEFMT).date() for x in feed["entry"]]
 
 class JpHoliday:
     @classmethod
