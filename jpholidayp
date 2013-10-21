@@ -16,8 +16,8 @@ class Cache:
     def __init__(self):
         try:
             os.mkdir(os.path.expanduser(datadir))
-        except OSError, (eno):
-            if eno.errno != errno.EEXIST:
+        except OSError:
+            if sys.exc_info()[1].errno != errno.EEXIST:
                 raise
 
     def get(self):
