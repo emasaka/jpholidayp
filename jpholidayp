@@ -4,13 +4,12 @@ import os
 import errno
 from datetime import datetime, date, timedelta
 import urllib2
-import json
+import yaml
 import cPickle as pickle
 
 datadir = "~/.jpholidayp"
 cachefile = "cache"
-cachedays = 2
-fetchdays = 2
+cachedays = 5
 
 class Cache:
     def __init__(self):
@@ -39,38 +38,28 @@ class Cache:
         with open(file, "w") as f:
             pickle.dump(dat, f)
 
-class GoogleJpHoliday:
-    URLBASE = "http://www.google.com/calendar/feeds/japanese@holiday.calendar.google.com/public/full"
-    DATEFMT = "%Y-%m-%d"
+class HolidayJp:
+    URL = 'https://raw.githubusercontent.com/k1LoW/holiday_jp/master/holidays.yml'
 
-    @classmethod
-    def get(self, dt, delta):
+    def __init__(self):
         cache = Cache()
-        dat = cache.get()
-        if dat and dat["date"] <= dt and dt < (dt + dat["delta"]):
-            return dat["data"]
+        c = cache.get()
+        if c:
+            dat = c["holiday_jp"]
         else:
-            dat_new = self.get_remote(dt, delta)
-            cache.set({"date": dt, "delta": delta, "data": dat_new})
-            return dat_new
+            res = urllib2.urlopen(self.URL)
+            dat = yaml.load(res)
+            cache.set({"holiday_jp": dat})
+        self.holiday_jp = dat
 
-    @classmethod
-    def get_remote(self, dt, delta):
-        min = date.strftime(dt, self.DATEFMT)
-        max = date.strftime(dt + delta, self.DATEFMT)
-        url = self.URLBASE + "?alt=json&start-min=%s&start-max=%s" % (min, max)
-        res = urllib2.urlopen(url)
-        dat = json.load(res)
-        feed = dat["feed"]
-        if not feed.has_key("entry"):
-            return []
-        return [datetime.strptime(x["gd$when"][0]["startTime"], self.DATEFMT).date() for x in feed["entry"]]
+    def is_holiday(self, dt):
+        return dt in self.holiday_jp.keys()
 
 class JpHoliday:
     @classmethod
     def is_national_holiday(self, dt):
-        holidays = GoogleJpHoliday.get(dt, timedelta(fetchdays))
-        return dt in holidays
+        holiday_jp = HolidayJp()
+        return holiday_jp.is_holiday(dt)
 
     # value of datetime.weekday()
     SATURDAY = 5
