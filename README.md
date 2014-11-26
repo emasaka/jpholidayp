@@ -35,6 +35,11 @@ Run some-command in holiday.
 
 Run some-command in weekday.
 
+## REQUIRES
+
+* Python
+* PyYAML
+
 ## AUTHOR
 
 emasaka
