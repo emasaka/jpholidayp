@@ -40,6 +40,13 @@ Run some-command in weekday.
 * Python
 * PyYAML
 
+## PROXY
+
+This program accesses internet server once in 5 days.
+
+If you have to use proxy to access internet, set `https_proxy`
+environment variable.
+
 ## AUTHOR
 
 emasaka
