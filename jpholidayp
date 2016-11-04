@@ -3,9 +3,15 @@ import sys
 import os
 import errno
 from datetime import datetime, date, timedelta
-import urllib2
 import yaml
-import cPickle as pickle
+try:
+    from urllib2 import urlopen # Python 2.x
+except ImportError:
+    from urllib.request import urlopen # Python 3.x
+try:
+    import cPickle as pickle    # Python 2.x
+except ImportError:
+    import pickle               # Python 3.x
 
 datadir = "~/.jpholidayp"
 cachefile = "cache"
@@ -37,7 +43,7 @@ class Cache:
         dat = {"expires": expires, "val": val}
         file = os.path.join(os.path.expanduser(datadir), cachefile)
         with open(file, 'wb') as f:
-            pickle.dump(dat, f)
+            pickle.dump(dat, f, protocol=2) # for Python 2.x and 3.x
 
 class HolidayJp:
     URL = 'https://raw.githubusercontent.com/k1LoW/holiday_jp/master/holidays.yml'
@@ -48,7 +54,7 @@ class HolidayJp:
         if c:
             dat = c["holiday_jp"]
         else:
-            res = urllib2.urlopen(self.URL)
+            res = urlopen(self.URL)
             dat = yaml.load(res)
             cache.set({"holiday_jp": dat})
         self.holiday_jp = dat
