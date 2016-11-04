@@ -16,6 +16,7 @@ class Cache:
         try:
             os.mkdir(os.path.expanduser(datadir))
         except OSError:
+            # get exception instance on Python <= 2.5, 2.6/2.7 and 3.x
             if sys.exc_info()[1].errno != errno.EEXIST:
                 raise
 
