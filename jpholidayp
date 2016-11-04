@@ -24,7 +24,7 @@ class Cache:
         if not os.path.exists(file):
             return None
         today = date.today()
-        with open(file) as f:
+        with open(file, 'rb') as f:
             dat = pickle.load(f)
         if dat["expires"] <= today:
             return None
@@ -35,7 +35,7 @@ class Cache:
         expires = date.today() + timedelta(cachedays)
         dat = {"expires": expires, "val": val}
         file = os.path.join(os.path.expanduser(datadir), cachefile)
-        with open(file, "w") as f:
+        with open(file, 'wb') as f:
             pickle.dump(dat, f)
 
 class HolidayJp:
