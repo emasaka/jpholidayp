@@ -31,8 +31,11 @@ class Cache:
         if not os.path.exists(file):
             return None
         today = date.today()
-        with open(file, 'rb') as f:
-            dat = pickle.load(f)
+        try:
+            with open(file, 'rb') as f:
+                dat = pickle.load(f)
+        except:                 # cache file may be broken
+            return None
         if dat["expires"] <= today:
             return None
         else:
