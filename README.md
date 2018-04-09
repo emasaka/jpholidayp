@@ -19,7 +19,7 @@ Reports as exit status:
 "Holiday" means:
 
 * Sunday and Saturday
-* In [holiday_jp](https://github.com/k1LoW/holiday_jp)
+* In [holiday_jp](https://github.com/holiday-jp/holiday_jp)
 
 It creates cache file at ~/.jpholidayp directory.
 
