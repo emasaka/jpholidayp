@@ -49,7 +49,7 @@ class Cache:
             pickle.dump(dat, f, protocol=2) # for Python 2.x and 3.x
 
 class HolidayJp:
-    URL = 'https://raw.githubusercontent.com/k1LoW/holiday_jp/master/holidays.yml'
+    URL = 'https://raw.githubusercontent.com/holiday-jp/holiday_jp/master/holidays.yml'
 
     def __init__(self):
         cache = Cache()
