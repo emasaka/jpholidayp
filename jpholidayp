@@ -3,6 +3,7 @@ import sys
 import os
 import errno
 from datetime import datetime, date, timedelta
+import pytz
 from contextlib import closing
 import yaml
 try:
@@ -18,6 +19,8 @@ datadir = "~/.jpholidayp"
 cachefile = "cache"
 cachedays = 5
 
+JST = pytz.timezone('Asia/Tokyo')
+
 class Cache:
     def __init__(self):
         try:
@@ -31,7 +34,7 @@ class Cache:
         file = os.path.join(os.path.expanduser(datadir), cachefile)
         if not os.path.exists(file):
             return None
-        today = date.today()
+        today = datetime.now(JST).date()
         try:
             with open(file, 'rb') as f:
                 dat = pickle.load(f)
@@ -43,7 +46,7 @@ class Cache:
             return dat["val"]
 
     def set(self, val):
-        expires = date.today() + timedelta(cachedays)
+        expires = datetime.now(JST).date() + timedelta(cachedays)
         dat = {"expires": expires, "val": val}
         file = os.path.join(os.path.expanduser(datadir), cachefile)
         with open(file, 'wb') as f:
@@ -82,6 +85,7 @@ class JpHoliday:
         if w == self.SATURDAY or w == self.SUNDAY:
             return True
         elif self.is_national_holiday(dt):
+        if self.is_national_holiday(dt):
             return True
         else:
             return False
@@ -92,7 +96,7 @@ EXIT_WEEKDAY = 1
 EXIT_ERROR = 2
 
 def jpholidayp():
-    today = date.today()
+    today = datetime.now(JST).date()
     if JpHoliday.is_holiday(today):
         sys.exit(EXIT_HOLIDAY)
     else:

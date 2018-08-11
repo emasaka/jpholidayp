@@ -39,6 +39,7 @@ Run some-command in weekday.
 
 * Python
 * PyYAML
+* pytz
 
 ## PROXY
 
