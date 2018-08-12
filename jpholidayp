@@ -31,7 +31,7 @@ class Cache:
         file = os.path.join(os.path.expanduser(datadir), cachefile)
         if not os.path.exists(file):
             return None
-        today = date.today()
+        today = datetime.utcnow().date()
         try:
             with open(file, 'rb') as f:
                 dat = pickle.load(f)
@@ -43,7 +43,7 @@ class Cache:
             return dat["val"]
 
     def set(self, val):
-        expires = date.today() + timedelta(cachedays)
+        expires = datetime.utcnow().date() + timedelta(cachedays)
         dat = {"expires": expires, "val": val}
         file = os.path.join(os.path.expanduser(datadir), cachefile)
         with open(file, 'wb') as f:
