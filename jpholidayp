@@ -59,7 +59,7 @@ class HolidayJp:
             dat = c["holiday_jp"]
         else:
             with closing(urlopen(self.URL)) as res:
-                dat = yaml.load(res)
+                dat = yaml.load(res, Loader=yaml.SafeLoader)
             cache.set({"holiday_jp": dat})
         self.holiday_jp = dat
 
